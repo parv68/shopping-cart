@@ -86,47 +86,69 @@ const products = [
 ];
 
 products.forEach(
-    ({ name, id, price, category }) => {
-      dessertCards.innerHTML += `
-        <div class="dessert-card">
-          <h2>${name}</h2>
-          <p class="dessert-price">$${price}</p>
-          <p class="product-category">Category: ${category}</p>
-          <button 
-            id="${id}" 
-            class="btn add-to-cart-btn">Add to cart
-          </button>
-        </div>
-      `;
-    }
-  );
+  ({ name, id, price, category }) => {
+    dessertCards.innerHTML += `
+      <div class="dessert-card">
+        <h2>${name}</h2>
+        <p class="dessert-price">$${price}</p>
+        <p class="product-category">Category: ${category}</p>
+        <button 
+          id="${id}" 
+          class="btn add-to-cart-btn">Add to cart
+        </button>
+      </div>
+    `;
+  }
+);
 
-  class ShoppingCart {
-    constructor() {
-      this.items = [];
-      this.total = 0;
-      this.taxRate = 8.25;
-    }
-  
-    addItem(id, products) {
-      const product = products.find((item) => item.id === id);
-      const { name, price } = product;
-      this.items.push(product);
-  
-      const totalCountPerProduct = {};
-      this.items.forEach((dessert) => {
-        totalCountPerProduct[dessert.id] = (totalCountPerProduct[dessert.id] || 0) + 1;
-      })
-  
-      const currentProductCount = totalCountPerProduct[product.id];
-      const currentProductCountSpan = document.getElementById(`product-count-for-id${id}`);
-  
-      currentProductCount > 1 
-        ? currentProductCountSpan.textContent = `${currentProductCount}x`
-        : productsContainer.innerHTML += `
-        <div id="dessert${id}" class="product">
-  
-        </div>
-        `;
-    }
-  };
+class ShoppingCart {
+  constructor() {
+    this.items = [];
+    this.total = 0;
+    this.taxRate = 8.25;
+  }
+
+  addItem(id, products) {
+    const product = products.find((item) => item.id === id);
+    const { name, price } = product;
+    this.items.push(product);
+
+    const totalCountPerProduct = {};
+    this.items.forEach((dessert) => {
+      totalCountPerProduct[dessert.id] = (totalCountPerProduct[dessert.id] || 0) + 1;
+    })
+
+    const currentProductCount = totalCountPerProduct[product.id];
+    const currentProductCountSpan = document.getElementById(`product-count-for-id${id}`);
+
+    currentProductCount > 1 
+      ? currentProductCountSpan.textContent = `${currentProductCount}x`
+      : productsContainer.innerHTML += `
+      <div id="dessert${id}" class="product">
+        <p>
+          <span class="product-count" id="product-count-for-id${id}"></span>${name}
+        </p>
+        <p>${price}</p>
+      </div>
+      `;
+  }
+
+
+};
+
+const cart = new ShoppingCart();
+const addToCartBtns = document.getElementsByClassName("add-to-cart-btn");
+
+[...addToCartBtns].forEach(
+  (btn) => {
+    btn.addEventListener("click", (event) => {
+      cart.addItem(Number(event.target.id), products);
+    })
+  }
+);
+
+cartBtn.addEventListener("click", () => {
+  isCartShowing = !isCartShowing;
+  showHideCartSpan.textContent = isCartShowing ? "Hide" : "Show";
+  cartContainer.style.display = isCartShowing ? "block" : "none";
+});
